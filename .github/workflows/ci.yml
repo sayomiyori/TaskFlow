@@ -82,7 +82,21 @@ jobs:
       - name: Pytest with coverage XML
         run: pytest --cov=apps --cov-report=xml
 
+      # Codecov requires a repository upload token for pushes to protected branches (e.g. main).
+      # Add secret CODECOV_TOKEN in: Repo Settings → Secrets and variables → Actions.
+      # (Do not use `if: secrets.X == ''` — GitHub treats that comparison as always false.)
+      - name: Check Codecov token
+        id: codecov_token
+        run: |
+          if [ -z "${{ secrets.CODECOV_TOKEN }}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Codecov::Upload skipped — add repository secret CODECOV_TOKEN (https://docs.codecov.com/docs/codecov-tokens) for reports on main."
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload coverage to Codecov
+        if: steps.codecov_token.outputs.present == 'true'
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml

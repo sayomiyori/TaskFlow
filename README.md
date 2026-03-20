@@ -111,7 +111,9 @@ Run RabbitMQ integration tests only:
 make test-integration
 ```
 
-Coverage is generated in CI (`pytest --cov=apps --cov-report=xml`) and reported to Codecov.
+Coverage is generated in CI (`pytest --cov=apps --cov-report=xml`) and reported to Codecov when configured.
+
+**Codecov on `main`:** Codecov no longer accepts tokenless uploads for protected branches. In GitHub go to **Settings → Secrets and variables → Actions** and add **`CODECOV_TOKEN`** (from [Codecov](https://codecov.io/) → your repo → **Settings** → **Upload token**). Without this secret, CI still runs tests and produces `coverage.xml`, but the Codecov upload step is skipped.
 
 ## Screenshots
 
