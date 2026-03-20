@@ -44,7 +44,11 @@ class IsProjectManager(BasePermission):
         # Для create/update задач нужен project из request.data.
         # Для создания/обновления проектов object пока отсутствует — тогда
         # ключа `project` в data обычно нет, и мы не валидируем владение тут.
-        if request.method not in SAFE_METHODS and request.method in ("POST", "PUT", "PATCH"):
+        if request.method not in SAFE_METHODS and request.method in (
+            "POST",
+            "PUT",
+            "PATCH",
+        ):
             project_id = request.data.get("project") or request.data.get("project_id")
             if project_id:
                 return Project.objects.filter(id=project_id, owner_id=user.id).exists()
@@ -102,7 +106,9 @@ class IsProjectMember(BasePermission):
         # UPDATE (PUT/PATCH): только assigned задачам пользователя
         if request.method in ("PUT", "PATCH"):
             if isinstance(obj, Task):
-                return obj.assignee_id == user.id and _user_is_project_member(user, obj.project)
+                return obj.assignee_id == user.id and _user_is_project_member(
+                    user, obj.project
+                )
 
         return False
 
@@ -126,4 +132,3 @@ class IsAdminOrProjectManagerOrProjectMember(BasePermission):
             or IsProjectManager().has_object_permission(request, view, obj)
             or IsProjectMember().has_object_permission(request, view, obj)
         )
-

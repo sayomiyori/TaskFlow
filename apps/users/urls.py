@@ -9,4 +9,3 @@ urlpatterns = [
     path("auth/login/", LoginAPIView.as_view(), name="auth-login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
 ]
-

@@ -20,7 +20,11 @@ class RegisterAPIView(APIView):
         examples=[
             OpenApiExample(
                 "Register example",
-                value={"email": "john@example.com", "password": "StrongPassword123", "name": "John"},
+                value={
+                    "email": "john@example.com",
+                    "password": "StrongPassword123",
+                    "name": "John",
+                },
             )
         ],
     )
@@ -59,8 +63,12 @@ class LoginAPIView(APIView):
 
         user = User.objects.filter(email=email).first()
         if not user or not user.check_password(password):
-            return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED
+            )
 
         refresh = RefreshToken.for_user(user)
-        return Response({"access": str(refresh.access_token), "refresh": str(refresh)}, status=status.HTTP_200_OK)
-
+        return Response(
+            {"access": str(refresh.access_token), "refresh": str(refresh)},
+            status=status.HTTP_200_OK,
+        )

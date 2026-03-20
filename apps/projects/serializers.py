@@ -61,4 +61,3 @@ class ProjectSerializer(serializers.ModelSerializer):
         if members is not None:
             project.members.set(members)
         return project
-

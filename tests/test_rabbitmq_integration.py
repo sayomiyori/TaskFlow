@@ -26,7 +26,9 @@ from conftest import ProjectFactory, TaskFactory, UserFactory
 pytestmark = pytest.mark.integration
 
 
-async def _receive_one_task_event(url: str, exchange_name: str, timeout: float = 25.0) -> dict[str, Any]:
+async def _receive_one_task_event(
+    url: str, exchange_name: str, timeout: float = 25.0
+) -> dict[str, Any]:
     connection = await aio_pika.connect_robust(url)
     try:
         channel = await connection.channel()
@@ -181,7 +183,9 @@ def test_signal_task_updated_publishes_to_rabbitmq(rabbitmq_available):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_published_event_matches_notification_consumer_payload_shape(rabbitmq_available):
+def test_published_event_matches_notification_consumer_payload_shape(
+    rabbitmq_available,
+):
     # Arrange (имитация того, что делает consumer: JSON -> поля события)
     manager = UserFactory(role=User.Role.MANAGER)
     member = UserFactory(role=User.Role.MEMBER)
@@ -224,5 +228,11 @@ def test_published_event_matches_notification_consumer_payload_shape(rabbitmq_av
     body = asyncio.run(run())
 
     # Assert — те же ключи, что ожидает notification_service TaskEvent
-    assert set(body.keys()) >= {"event_type", "task_id", "project_id", "timestamp", "data"}
+    assert set(body.keys()) >= {
+        "event_type",
+        "task_id",
+        "project_id",
+        "timestamp",
+        "data",
+    }
     assert isinstance(body["data"], dict)

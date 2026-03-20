@@ -15,7 +15,11 @@ register_comments(router)
 urlpatterns = [
     path("admin/", admin.site.urls),
     # Swagger/OpenAPI
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="api-schema"), name="api-docs"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="api-schema"),
+        name="api-docs",
+    ),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     # API v1
     path("api/v1/", include(router.urls)),

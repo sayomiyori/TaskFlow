@@ -47,7 +47,9 @@ class TaskViewSet(ModelViewSet):
             return Task.objects.filter(project__owner_id=user.id)
 
         # Member
-        return Task.objects.filter(Q(project__owner_id=user.id) | Q(project__members__id=user.id)).distinct()
+        return Task.objects.filter(
+            Q(project__owner_id=user.id) | Q(project__members__id=user.id)
+        ).distinct()
 
     def perform_destroy(self, instance: Task) -> None:
         # Членам запрещаем удалять (по требованиям)
@@ -78,7 +80,9 @@ class TaskViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
-    @extend_schema(tags=["Tasks"], description="Список задач с фильтрами/поиском/сортировкой.")
+    @extend_schema(
+        tags=["Tasks"], description="Список задач с фильтрами/поиском/сортировкой."
+    )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -127,4 +131,3 @@ class TaskViewSet(ModelViewSet):
     @extend_schema(tags=["Tasks"], description="Удалить задачу.")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-

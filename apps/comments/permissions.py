@@ -27,7 +27,11 @@ class IsProjectManager(BasePermission):
 
     def has_permission(self, request, view) -> bool:
         user = request.user
-        if not user or not user.is_authenticated or getattr(user, "role", None) != User.Role.MANAGER:
+        if (
+            not user
+            or not user.is_authenticated
+            or getattr(user, "role", None) != User.Role.MANAGER
+        ):
             return False
 
         # При создании комментария проверяем принадлежность task проекту manager'а
@@ -41,7 +45,11 @@ class IsProjectManager(BasePermission):
 
     def has_object_permission(self, request, view, obj: Any) -> bool:
         user = request.user
-        if not user or not user.is_authenticated or getattr(user, "role", None) != User.Role.MANAGER:
+        if (
+            not user
+            or not user.is_authenticated
+            or getattr(user, "role", None) != User.Role.MANAGER
+        ):
             return False
 
         if isinstance(obj, Comment):
@@ -56,14 +64,22 @@ class IsProjectMember(BasePermission):
 
     def has_permission(self, request, view) -> bool:
         user = request.user
-        if not user or not user.is_authenticated or getattr(user, "role", None) != User.Role.MEMBER:
+        if (
+            not user
+            or not user.is_authenticated
+            or getattr(user, "role", None) != User.Role.MEMBER
+        ):
             return False
         # CRUD комментов запрещён (только чтение)
         return request.method in SAFE_METHODS
 
     def has_object_permission(self, request, view, obj: Any) -> bool:
         user = request.user
-        if not user or not user.is_authenticated or getattr(user, "role", None) != User.Role.MEMBER:
+        if (
+            not user
+            or not user.is_authenticated
+            or getattr(user, "role", None) != User.Role.MEMBER
+        ):
             return False
 
         if request.method not in SAFE_METHODS:
@@ -71,7 +87,10 @@ class IsProjectMember(BasePermission):
 
         if isinstance(obj, Comment):
             project = obj.task.project
-            return project.owner_id == user.id or project.members.filter(id=user.id).exists()
+            return (
+                project.owner_id == user.id
+                or project.members.filter(id=user.id).exists()
+            )
         return False
 
 
@@ -89,4 +108,3 @@ class IsAdminOrProjectManagerOrProjectMember(BasePermission):
             or IsProjectManager().has_object_permission(request, view, obj)
             or IsProjectMember().has_object_permission(request, view, obj)
         )
-

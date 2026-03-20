@@ -14,7 +14,9 @@ class RabbitMQPublisher:
     Simple RabbitMQ topic publisher for task domain events.
     """
 
-    def __init__(self, url: str | None = None, exchange_name: str | None = None) -> None:
+    def __init__(
+        self, url: str | None = None, exchange_name: str | None = None
+    ) -> None:
         self.url = url or settings.RABBITMQ_URL
         self.exchange_name = exchange_name or settings.RABBITMQ_EXCHANGE
 
@@ -28,7 +30,9 @@ class RabbitMQPublisher:
                 durable=True,
             )
             message = aio_pika.Message(
-                body=json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8"),
+                body=json.dumps(payload, ensure_ascii=False, default=str).encode(
+                    "utf-8"
+                ),
                 content_type="application/json",
                 delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
                 type=event_type,

@@ -9,7 +9,9 @@ from app.schemas import TaskEvent
 logger = structlog.get_logger(__name__)
 
 
-async def send_telegram_notifications(event: TaskEvent, recipients: Iterable[str]) -> None:
+async def send_telegram_notifications(
+    event: TaskEvent, recipients: Iterable[str]
+) -> None:
     if not settings.telegram_bot_token:
         return
 
@@ -29,6 +31,8 @@ async def send_telegram_notifications(event: TaskEvent, recipients: Iterable[str
         for chat_id in set(chat_ids):
             await bot.send_message(chat_id=chat_id, text=text)
     except Exception:
-        logger.exception("telegram.send_failed", event_type=event.event_type, recipients=chat_ids)
+        logger.exception(
+            "telegram.send_failed", event_type=event.event_type, recipients=chat_ids
+        )
     finally:
         await bot.session.close()

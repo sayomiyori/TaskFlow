@@ -37,4 +37,3 @@ class LoginSerializer(serializers.Serializer):
         style={"input_type": "password"},
         help_text="Пароль пользователя.",
     )
-

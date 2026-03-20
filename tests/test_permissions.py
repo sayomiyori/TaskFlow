@@ -21,10 +21,16 @@ def test_admin_can_access_all_projects(admin_client, manager_user):
 def test_manager_can_manage_own_project(manager_client, manager_user):
     # Arrange
     own_project = ProjectFactory(owner=manager_user)
-    payload = {"name": "Updated own project", "description": own_project.description, "members": []}
+    payload = {
+        "name": "Updated own project",
+        "description": own_project.description,
+        "members": [],
+    }
 
     # Act
-    response = manager_client.patch(f"/api/v1/projects/{own_project.id}/", payload, format="json")
+    response = manager_client.patch(
+        f"/api/v1/projects/{own_project.id}/", payload, format="json"
+    )
 
     # Assert
     assert response.status_code == 200

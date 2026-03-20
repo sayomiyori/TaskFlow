@@ -62,7 +62,11 @@ def test_list_tasks_with_filters(manager_client, db_setup):
 def test_list_tasks_pagination(manager_client, db_setup):
     # Arrange
     for i in range(25):
-        TaskFactory(project=db_setup["project"], assignee=db_setup["member"], title=f"Paginated task {i}")
+        TaskFactory(
+            project=db_setup["project"],
+            assignee=db_setup["member"],
+            title=f"Paginated task {i}",
+        )
 
     # Act
     response = manager_client.get("/api/v1/tasks/")
@@ -108,9 +112,24 @@ def test_search_tasks_by_title(manager_client, db_setup):
 @pytest.mark.django_db
 def test_ordering_by_priority(manager_client, db_setup):
     # Arrange
-    TaskFactory(project=db_setup["project"], assignee=db_setup["member"], title="P1", priority=Task.Priority.CRITICAL)
-    TaskFactory(project=db_setup["project"], assignee=db_setup["member"], title="P2", priority=Task.Priority.LOW)
-    TaskFactory(project=db_setup["project"], assignee=db_setup["member"], title="P3", priority=Task.Priority.HIGH)
+    TaskFactory(
+        project=db_setup["project"],
+        assignee=db_setup["member"],
+        title="P1",
+        priority=Task.Priority.CRITICAL,
+    )
+    TaskFactory(
+        project=db_setup["project"],
+        assignee=db_setup["member"],
+        title="P2",
+        priority=Task.Priority.LOW,
+    )
+    TaskFactory(
+        project=db_setup["project"],
+        assignee=db_setup["member"],
+        title="P3",
+        priority=Task.Priority.HIGH,
+    )
 
     # Act
     response = manager_client.get("/api/v1/tasks/?ordering=priority")

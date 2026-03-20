@@ -64,7 +64,11 @@ class CommentViewSet(ModelViewSet):
         description="Обновить комментарий.",
         request=CommentSerializer,
         responses=CommentSerializer,
-        examples=[OpenApiExample("Update comment example", value={"text": "Updated comment", "task": 1})],
+        examples=[
+            OpenApiExample(
+                "Update comment example", value={"text": "Updated comment", "task": 1}
+            )
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -74,7 +78,11 @@ class CommentViewSet(ModelViewSet):
         description="Частично обновить комментарий.",
         request=CommentSerializer,
         responses=CommentSerializer,
-        examples=[OpenApiExample("Partial update example", value={"text": "Only text changed"})],
+        examples=[
+            OpenApiExample(
+                "Partial update example", value={"text": "Only text changed"}
+            )
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -82,4 +90,3 @@ class CommentViewSet(ModelViewSet):
     @extend_schema(tags=["Comments"], description="Удалить комментарий.")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-

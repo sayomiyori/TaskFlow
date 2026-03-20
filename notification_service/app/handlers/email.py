@@ -36,4 +36,6 @@ async def send_email_notifications(event: TaskEvent, recipients: Iterable[str]) 
             password=settings.smtp_password or None,
         )
     except Exception:
-        logger.exception("email.send_failed", event_type=event.event_type, recipients=recipient_list)
+        logger.exception(
+            "email.send_failed", event_type=event.event_type, recipients=recipient_list
+        )

@@ -28,7 +28,9 @@ class NotificationConsumer:
             aio_pika.ExchangeType.TOPIC,
             durable=True,
         )
-        self.queue = await self.channel.declare_queue(settings.rabbitmq_queue, durable=True)
+        self.queue = await self.channel.declare_queue(
+            settings.rabbitmq_queue, durable=True
+        )
         await self.queue.bind(exchange, routing_key=settings.rabbitmq_routing_key)
         await self.queue.consume(self._on_message)
 

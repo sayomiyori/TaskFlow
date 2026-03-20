@@ -1,4 +1,9 @@
-from apps.tasks.permissions import IsAdmin, IsProjectManager, IsProjectMember, IsAdminOrProjectManagerOrProjectMember
+from apps.tasks.permissions import (
+    IsAdmin,
+    IsProjectManager,
+    IsProjectMember,
+    IsAdminOrProjectManagerOrProjectMember,
+)
 
 __all__ = [
     "IsAdmin",
@@ -6,4 +11,3 @@ __all__ = [
     "IsProjectMember",
     "IsAdminOrProjectManagerOrProjectMember",
 ]
-

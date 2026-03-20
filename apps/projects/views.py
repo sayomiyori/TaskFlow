@@ -32,11 +32,15 @@ class ProjectViewSet(ModelViewSet):
         if getattr(user, "role", None) == User.Role.MANAGER:
             base_qs = base_qs.filter(owner_id=user.id)
         elif getattr(user, "role", None) == User.Role.MEMBER:
-            base_qs = base_qs.filter(Q(owner_id=user.id) | Q(members__id=user.id)).distinct()
+            base_qs = base_qs.filter(
+                Q(owner_id=user.id) | Q(members__id=user.id)
+            ).distinct()
 
         return base_qs.annotate(
             todo_count=Count("tasks", filter=Q(tasks__status=Task.Status.TODO)),
-            in_progress_count=Count("tasks", filter=Q(tasks__status=Task.Status.IN_PROGRESS)),
+            in_progress_count=Count(
+                "tasks", filter=Q(tasks__status=Task.Status.IN_PROGRESS)
+            ),
             review_count=Count("tasks", filter=Q(tasks__status=Task.Status.REVIEW)),
             done_count=Count("tasks", filter=Q(tasks__status=Task.Status.DONE)),
         )
@@ -49,7 +53,11 @@ class ProjectViewSet(ModelViewSet):
         examples=[
             OpenApiExample(
                 "Create project example",
-                value={"name": "New Project", "description": "First project", "members": []},
+                value={
+                    "name": "New Project",
+                    "description": "First project",
+                    "members": [],
+                },
             )
         ],
     )
@@ -72,7 +80,11 @@ class ProjectViewSet(ModelViewSet):
         examples=[
             OpenApiExample(
                 "Update project example",
-                value={"name": "Updated Project", "description": "New description", "members": []},
+                value={
+                    "name": "Updated Project",
+                    "description": "New description",
+                    "members": [],
+                },
             )
         ],
     )
@@ -84,7 +96,12 @@ class ProjectViewSet(ModelViewSet):
         description="Частично обновить проект.",
         request=ProjectSerializer,
         responses=ProjectSerializer,
-        examples=[OpenApiExample("Partial update example", value={"description": "Only description changed"})],
+        examples=[
+            OpenApiExample(
+                "Partial update example",
+                value={"description": "Only description changed"},
+            )
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -92,4 +109,3 @@ class ProjectViewSet(ModelViewSet):
     @extend_schema(tags=["Projects"], description="Удалить проект.")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-

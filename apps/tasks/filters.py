@@ -11,10 +11,20 @@ class TaskFilter(django_filters.FilterSet):
     project = drf_filters.NumberFilter(field_name="project__id")
 
     # Диапазон по due_date
-    due_date_after = drf_filters.DateTimeFilter(field_name="due_date", lookup_expr="gte")
-    due_date_before = drf_filters.DateTimeFilter(field_name="due_date", lookup_expr="lte")
+    due_date_after = drf_filters.DateTimeFilter(
+        field_name="due_date", lookup_expr="gte"
+    )
+    due_date_before = drf_filters.DateTimeFilter(
+        field_name="due_date", lookup_expr="lte"
+    )
 
     class Meta:
         model = Task
-        fields = ["status", "priority", "assignee", "project", "due_date_after", "due_date_before"]
-
+        fields = [
+            "status",
+            "priority",
+            "assignee",
+            "project",
+            "due_date_after",
+            "due_date_before",
+        ]

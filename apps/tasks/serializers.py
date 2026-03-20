@@ -72,7 +72,11 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         assignee_id = validated_data.pop("assignee_id", None)
         # due_date может прийти как timezone-naive строка, но DRF сам конвертирует.
-        if "due_date" in validated_data and validated_data["due_date"] and timezone.is_naive(validated_data["due_date"]):
+        if (
+            "due_date" in validated_data
+            and validated_data["due_date"]
+            and timezone.is_naive(validated_data["due_date"])
+        ):
             validated_data["due_date"] = timezone.make_aware(validated_data["due_date"])
 
         if assignee_id is not None:
@@ -81,11 +85,14 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         assignee_id = validated_data.pop("assignee_id", None)
-        if "due_date" in validated_data and validated_data["due_date"] and timezone.is_naive(validated_data["due_date"]):
+        if (
+            "due_date" in validated_data
+            and validated_data["due_date"]
+            and timezone.is_naive(validated_data["due_date"])
+        ):
             validated_data["due_date"] = timezone.make_aware(validated_data["due_date"])
 
         if assignee_id is not None:
             validated_data["assignee_id"] = assignee_id
 
         return super().update(instance, validated_data)
-

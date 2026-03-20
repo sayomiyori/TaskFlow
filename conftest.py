@@ -136,7 +136,12 @@ def db_setup(manager_user, member_user):
         status=Task.Status.DONE,
         priority=Task.Priority.CRITICAL,
     )
-    return {"project": project, "tasks": [task_1, task_2, task_3], "manager": manager_user, "member": member_user}
+    return {
+        "project": project,
+        "tasks": [task_1, task_2, task_3],
+        "manager": manager_user,
+        "member": member_user,
+    }
 
 
 @pytest.fixture
