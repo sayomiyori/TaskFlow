@@ -40,14 +40,16 @@ class TaskViewSet(ModelViewSet):
         if not user or not user.is_authenticated:
             return Task.objects.none()
 
+        base_qs = Task.objects.select_related("assignee", "project")
+
         if getattr(user, "role", None) == User.Role.ADMIN or user.is_superuser:
-            return Task.objects.all()
+            return base_qs
 
         if getattr(user, "role", None) == User.Role.MANAGER:
-            return Task.objects.filter(project__owner_id=user.id)
+            return base_qs.filter(project__owner_id=user.id)
 
         # Member
-        return Task.objects.filter(
+        return base_qs.filter(
             Q(project__owner_id=user.id) | Q(project__members__id=user.id)
         ).distinct()
 

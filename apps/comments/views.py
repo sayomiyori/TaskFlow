@@ -26,13 +26,15 @@ class CommentViewSet(ModelViewSet):
         if not user or not user.is_authenticated:
             return Comment.objects.none()
 
+        base_qs = Comment.objects.select_related("author", "task__project")
+
         if getattr(user, "role", None) == User.Role.ADMIN or user.is_superuser:
-            return Comment.objects.all()
+            return base_qs
 
         if getattr(user, "role", None) == User.Role.MANAGER:
-            return Comment.objects.filter(task__project__owner_id=user.id)
+            return base_qs.filter(task__project__owner_id=user.id)
 
-        return Comment.objects.filter(
+        return base_qs.filter(
             Q(task__project__owner_id=user.id) | Q(task__project__members__id=user.id)
         ).distinct()
 

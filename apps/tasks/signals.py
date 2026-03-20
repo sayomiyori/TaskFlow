@@ -65,10 +65,13 @@ def publish_comment_event(
 ) -> None:
     if not created:
         return
+    project_id = (
+        Task.objects.filter(pk=instance.task_id).values_list("project_id", flat=True).first()
+    )
     payload = {
         "event_type": "task.commented",
         "task_id": instance.task_id,
-        "project_id": instance.task.project_id,
+        "project_id": project_id,
         "actor_id": instance.author_id,
         "timestamp": timezone.now().isoformat(),
         "data": {

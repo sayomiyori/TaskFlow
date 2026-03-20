@@ -41,15 +41,16 @@ class NotificationConsumer:
             routing_key=settings.rabbitmq_routing_key,
         )
 
-    async def _connect_with_retry(self) -> aio_pika.RobustConnection:
-        attempts = 0
-        while True:
-            attempts += 1
+    async def _connect_with_retry(self, max_attempts: int = 10) -> aio_pika.RobustConnection:
+        for attempt in range(1, max_attempts + 1):
             try:
                 return await aio_pika.connect_robust(settings.rabbitmq_url)
             except Exception:
-                logger.warning("consumer.connect_retry", attempt=attempts)
-                await asyncio.sleep(2)
+                delay = min(2 ** attempt, 60)
+                logger.warning("consumer.connect_retry", attempt=attempt, retry_in=delay)
+                if attempt == max_attempts:
+                    raise
+                await asyncio.sleep(delay)
 
     async def stop(self) -> None:
         if self.channel:

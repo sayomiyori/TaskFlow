@@ -28,7 +28,7 @@ class ProjectViewSet(ModelViewSet):
         if not user or not user.is_authenticated:
             return qs
 
-        base_qs = Project.objects.all()
+        base_qs = Project.objects.select_related("owner").prefetch_related("members")
         if getattr(user, "role", None) == User.Role.MANAGER:
             base_qs = base_qs.filter(owner_id=user.id)
         elif getattr(user, "role", None) == User.Role.MEMBER:

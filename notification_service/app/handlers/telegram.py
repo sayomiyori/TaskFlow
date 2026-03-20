@@ -8,11 +8,24 @@ from app.schemas import TaskEvent
 
 logger = structlog.get_logger(__name__)
 
+_bot: Bot | None = None
+
+
+def _get_bot() -> Bot | None:
+    """Return a module-level singleton Bot, or None if not configured."""
+    global _bot
+    if not settings.telegram_bot_token:
+        return None
+    if _bot is None:
+        _bot = Bot(token=settings.telegram_bot_token)
+    return _bot
+
 
 async def send_telegram_notifications(
     event: TaskEvent, recipients: Iterable[str]
 ) -> None:
-    if not settings.telegram_bot_token:
+    bot = _get_bot()
+    if bot is None:
         return
 
     chat_ids = [r for r in recipients if r and "@" not in r]
@@ -21,7 +34,6 @@ async def send_telegram_notifications(
     if not chat_ids:
         return
 
-    bot = Bot(token=settings.telegram_bot_token)
     text = (
         f"TaskFlow event: {event.event_type}\n"
         f"Task #{event.task_id} in project #{event.project_id}\n"
@@ -34,5 +46,3 @@ async def send_telegram_notifications(
         logger.exception(
             "telegram.send_failed", event_type=event.event_type, recipients=chat_ids
         )
-    finally:
-        await bot.session.close()

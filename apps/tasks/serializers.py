@@ -1,6 +1,8 @@
 from django.utils import timezone
 from rest_framework import serializers
 
+_UNSET = object()
+
 from apps.projects.models import Project
 from apps.users.models import User
 
@@ -15,9 +17,7 @@ class UserAssigneeInfoSerializer(serializers.ModelSerializer):
         fields = ("id", "email", "name")
 
     def get_name(self, obj: User) -> str:
-        full_name = (obj.first_name or "").strip()
-        if not full_name and obj.last_name:
-            full_name = (obj.last_name or "").strip()
+        full_name = f"{obj.first_name or ''} {obj.last_name or ''}".strip()
         return full_name or obj.email
 
 
@@ -84,7 +84,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         return Task.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        assignee_id = validated_data.pop("assignee_id", None)
+        assignee_id = validated_data.pop("assignee_id", _UNSET)
         if (
             "due_date" in validated_data
             and validated_data["due_date"]
@@ -92,7 +92,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         ):
             validated_data["due_date"] = timezone.make_aware(validated_data["due_date"])
 
-        if assignee_id is not None:
+        if assignee_id is not _UNSET:
             validated_data["assignee_id"] = assignee_id
 
         return super().update(instance, validated_data)

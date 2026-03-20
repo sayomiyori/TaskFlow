@@ -84,7 +84,7 @@ class IsProjectMember(BasePermission):
             return False
 
         # create запрещаем членам по требованиям
-        if request.method not in SAFE_METHODS and request.method == "POST":
+        if request.method == "POST":
             return False
         return True
 
