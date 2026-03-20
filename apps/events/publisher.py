@@ -14,8 +14,10 @@ class RabbitMQPublisher:
     """
     Simple RabbitMQ topic publisher for task domain events.
 
-    Reuses a single robust connection across calls; reconnects automatically
-    if the broker drops the connection (aio_pika RobustConnection handles this).
+    Opens a fresh connection per publish call. This is intentional: Django
+    signals run in a synchronous context via async_to_sync, which creates and
+    tears down a new event loop on each call. A cached connection would be
+    bound to the previous (now-closed) loop and raise RuntimeError on reuse.
     """
 
     def __init__(
@@ -23,41 +25,27 @@ class RabbitMQPublisher:
     ) -> None:
         self.url = url or settings.RABBITMQ_URL
         self.exchange_name = exchange_name or settings.RABBITMQ_EXCHANGE
-        self._connection: aio_pika.abc.AbstractRobustConnection | None = None
-        self._channel: aio_pika.abc.AbstractChannel | None = None
-        self._exchange: aio_pika.abc.AbstractExchange | None = None
 
-    async def _get_exchange(self) -> aio_pika.abc.AbstractExchange:
-        if self._connection is None or self._connection.is_closed:
-            self._connection = await aio_pika.connect_robust(self.url)
-            self._channel = None
-            self._exchange = None
-
-        connection = self._connection
-        assert connection is not None  # guaranteed by the block above
-
-        if self._channel is None or self._channel.is_closed:
-            self._channel = await connection.channel()
-            self._exchange = None
-
-        if self._exchange is None:
-            self._exchange = await self._channel.declare_exchange(
+    async def _publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
+        connection = await aio_pika.connect_robust(self.url)
+        try:
+            channel = await connection.channel()
+            exchange = await channel.declare_exchange(
                 self.exchange_name,
                 aio_pika.ExchangeType.TOPIC,
                 durable=True,
             )
-
-        return self._exchange
-
-    async def _publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
-        exchange = await self._get_exchange()
-        message = aio_pika.Message(
-            body=json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8"),
-            content_type="application/json",
-            delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
-            type=event_type,
-        )
-        await exchange.publish(message, routing_key=event_type)
+            message = aio_pika.Message(
+                body=json.dumps(payload, ensure_ascii=False, default=str).encode(
+                    "utf-8"
+                ),
+                content_type="application/json",
+                delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                type=event_type,
+            )
+            await exchange.publish(message, routing_key=event_type)
+        finally:
+            await connection.close()
 
     def publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
         try:
