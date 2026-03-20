@@ -43,4 +43,4 @@ class Task(models.Model):
         ordering = ["-created_at", "id"]
 
     def __str__(self) -> str:
-        return self.title
+        return str(self.title)

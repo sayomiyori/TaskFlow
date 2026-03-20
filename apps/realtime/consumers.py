@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from urllib.parse import parse_qs
 
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -14,7 +15,10 @@ class TaskConsumer(AsyncWebsocketConsumer):
     Read-only websocket consumer for project task updates.
     """
 
-    async def connect(self):
+    project_id: str
+    group_name: str
+
+    async def connect(self) -> None:
         self.project_id = self.scope["url_route"]["kwargs"]["project_id"]
         self.group_name = f"project_{self.project_id}"
 
@@ -33,14 +37,16 @@ class TaskConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code: int) -> None:
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
-    async def receive(self, text_data=None, bytes_data=None):
+    async def receive(
+        self, text_data: str | None = None, bytes_data: bytes | None = None
+    ) -> None:
         # Client messages are not accepted in this read-only channel.
         return
 
-    async def send_task_update(self, event):
+    async def send_task_update(self, event: dict[str, Any]) -> None:
         await self.send(
             text_data=json.dumps(
                 {
@@ -52,9 +58,9 @@ class TaskConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def _get_user_from_jwt(self, token: str):
+    async def _get_user_from_jwt(self, token: str) -> Any | None:
         try:
-            validated = AccessToken(token)
+            validated = AccessToken(str(token))  # type: ignore[arg-type]
             user_id = validated.get("user_id")
             if not user_id:
                 return None

@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -10,7 +12,7 @@ publisher = RabbitMQPublisher()
 
 
 @receiver(pre_save, sender=Task)
-def cache_previous_assignee(sender, instance: Task, **kwargs):
+def cache_previous_assignee(sender: Any, instance: Task, **kwargs: Any) -> None:
     if not instance.pk:
         instance._previous_assignee_id = None
         return
@@ -19,7 +21,9 @@ def cache_previous_assignee(sender, instance: Task, **kwargs):
 
 
 @receiver(post_save, sender=Task)
-def publish_task_events(sender, instance: Task, created: bool, **kwargs):
+def publish_task_events(
+    sender: Any, instance: Task, created: bool, **kwargs: Any
+) -> None:
     base_payload = {
         "event_type": "task.created" if created else "task.updated",
         "task_id": instance.id,
@@ -56,7 +60,9 @@ def publish_task_events(sender, instance: Task, created: bool, **kwargs):
 
 
 @receiver(post_save, sender=Comment)
-def publish_comment_event(sender, instance: Comment, created: bool, **kwargs):
+def publish_comment_event(
+    sender: Any, instance: Comment, created: bool, **kwargs: Any
+) -> None:
     if not created:
         return
     payload = {

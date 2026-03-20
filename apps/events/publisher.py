@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Any
 
 import aio_pika
 from asgiref.sync import async_to_sync
@@ -20,7 +21,7 @@ class RabbitMQPublisher:
         self.url = url or settings.RABBITMQ_URL
         self.exchange_name = exchange_name or settings.RABBITMQ_EXCHANGE
 
-    async def _publish_event(self, event_type: str, payload: dict) -> None:
+    async def _publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
         connection = await aio_pika.connect_robust(self.url)
         try:
             channel = await connection.channel()
@@ -41,7 +42,7 @@ class RabbitMQPublisher:
         finally:
             await connection.close()
 
-    def publish_event(self, event_type: str, payload: dict) -> None:
+    def publish_event(self, event_type: str, payload: dict[str, Any]) -> None:
         try:
             async_to_sync(self._publish_event)(event_type, payload)
             project_id = payload.get("project_id")
