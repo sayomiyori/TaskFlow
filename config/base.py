@@ -7,7 +7,9 @@ _secret_key = os.getenv("DJANGO_SECRET_KEY")
 if not _secret_key:
     raise RuntimeError(
         "DJANGO_SECRET_KEY environment variable is not set. "
-        "Generate one with: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+        "Generate one with: python -c "
+        '"from django.core.management.utils import get_random_secret_key;'
+        ' print(get_random_secret_key())"'
     )
 SECRET_KEY = _secret_key
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"

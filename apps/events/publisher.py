@@ -63,7 +63,9 @@ class RabbitMQPublisher:
             if project_id:
                 channel_layer = get_channel_layer()
                 if channel_layer is None:
-                    logger.warning("Channel layer is not configured; skipping WS fanout.")
+                    logger.warning(
+                        "Channel layer is not configured; skipping WS fanout."
+                    )
                     return
                 async_to_sync(channel_layer.group_send)(
                     f"project_{project_id}",

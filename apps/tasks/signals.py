@@ -66,7 +66,9 @@ def publish_comment_event(
     if not created:
         return
     project_id = (
-        Task.objects.filter(pk=instance.task_id).values_list("project_id", flat=True).first()
+        Task.objects.filter(pk=instance.task_id)
+        .values_list("project_id", flat=True)
+        .first()
     )
     payload = {
         "event_type": "task.commented",
