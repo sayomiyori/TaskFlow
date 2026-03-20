@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.projects",
     "apps.tasks",
     "apps.comments",
+    "apps.events",
 ]
 
 MIDDLEWARE = [
@@ -114,3 +115,6 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+RABBITMQ_EXCHANGE = os.getenv("RABBITMQ_EXCHANGE", "task_events")

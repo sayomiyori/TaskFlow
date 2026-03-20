@@ -1,5 +1,7 @@
+import asyncio
 from datetime import timedelta
 
+import aio_pika
 import factory
 import pytest
 from django.utils import timezone
@@ -135,3 +137,24 @@ def db_setup(manager_user, member_user):
         priority=Task.Priority.CRITICAL,
     )
     return {"project": project, "tasks": [task_1, task_2, task_3], "manager": manager_user, "member": member_user}
+
+
+@pytest.fixture
+def rabbitmq_available():
+    """
+    Реальный RabbitMQ (тот же URL, что и у Django publisher).
+    Если брокер недоступен — тесты с маркером integration будут пропущены.
+    """
+    from django.conf import settings
+
+    url = settings.RABBITMQ_URL
+
+    async def _ping() -> None:
+        conn = await asyncio.wait_for(aio_pika.connect_robust(url), timeout=5)
+        await conn.close()
+
+    try:
+        asyncio.run(_ping())
+    except Exception as exc:  # noqa: BLE001
+        pytest.skip(f"RabbitMQ not available: {exc}")
+    return url

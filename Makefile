@@ -1,4 +1,4 @@
-.PHONY: up down migrate createsuperuser shell
+.PHONY: up down migrate createsuperuser shell test test-integration
 
 up:
 	docker compose up --build -d
@@ -14,3 +14,9 @@ createsuperuser:
 
 shell:
 	docker compose run --rm web python manage.py shell
+
+test:
+	docker compose run --rm web pytest -q
+
+test-integration:
+	docker compose run --rm web pytest tests/test_rabbitmq_integration.py -m integration -v --no-cov
