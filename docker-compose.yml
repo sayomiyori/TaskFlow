@@ -1,51 +1,17 @@
 services:
-  web:
+  django:
     build: .
-    container_name: taskflow-web
+    container_name: taskflow-django
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./:/app
-    ports:
-      - "${DJANGO_EXPOSE_PORT:-8001}:8000"
+      - static_data:/app/staticfiles
     env_file:
       - .env
     depends_on:
-      - db
+      - postgres
       - redis
       - rabbitmq
-
-  db:
-    image: postgres:16
-    container_name: taskflow-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "${POSTGRES_EXPOSE_PORT:-5433}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7
-    container_name: taskflow-redis
-    restart: unless-stopped
-    ports:
-      - "${REDIS_EXPOSE_PORT:-6380}:6379"
-    volumes:
-      - redis_data:/data
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: taskflow-rabbitmq
-    restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
 
   notification_service:
     build:
@@ -56,9 +22,46 @@ services:
       - .env
     depends_on:
       - rabbitmq
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: taskflow-nginx
     ports:
-      - "${NOTIFICATION_EXPOSE_PORT:-8012}:8001"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_data:/static:ro
+    depends_on:
+      - django
+      - notification_service
+
+  postgres:
+    image: postgres:16
+    container_name: taskflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: taskflow-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: taskflow-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
 
 volumes:
   postgres_data:
   redis_data:
+  static_data:

@@ -11,3 +11,5 @@ pytest-django
 factory_boy
 pytest-cov
 aio-pika
+channels
+channels-redis

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "apps.tasks",
     "apps.comments",
     "apps.events",
+    "apps.realtime",
 ]
 
 MIDDLEWARE = [
@@ -62,7 +63,7 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB", "taskflow"),
         "USER": os.getenv("POSTGRES_USER", "taskflow"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "taskflow"),
-        "HOST": os.getenv("POSTGRES_HOST", "db"),
+        "HOST": os.getenv("POSTGRES_HOST", "postgres"),
         "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
@@ -118,3 +119,12 @@ SPECTACULAR_SETTINGS = {
 
 RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
 RABBITMQ_EXCHANGE = os.getenv("RABBITMQ_EXCHANGE", "task_events")
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_CHANNEL_HOST", "redis://redis:6379/1")],
+        },
+    },
+}

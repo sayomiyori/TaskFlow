@@ -3,6 +3,7 @@ import logging
 
 import aio_pika
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -39,5 +40,18 @@ class RabbitMQPublisher:
     def publish_event(self, event_type: str, payload: dict) -> None:
         try:
             async_to_sync(self._publish_event)(event_type, payload)
+            project_id = payload.get("project_id")
+            if project_id:
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"project_{project_id}",
+                    {
+                        "type": "send_task_update",
+                        "event_type": event_type,
+                        "task_id": payload.get("task_id"),
+                        "project_id": project_id,
+                        "payload": payload,
+                    },
+                )
         except Exception:  # pragma: no cover
             logger.exception("Failed to publish event '%s'", event_type)

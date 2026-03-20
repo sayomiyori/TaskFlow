@@ -3,20 +3,29 @@
 up:
 	docker compose up --build -d
 
+rebuild:
+	docker compose up --build -d
+
 down:
 	docker compose down
 
 migrate:
-	docker compose run --rm web python manage.py migrate
+	docker compose run --rm django python manage.py migrate
 
 createsuperuser:
-	docker compose run --rm web python manage.py createsuperuser
+	docker compose run --rm django python manage.py createsuperuser
 
 shell:
-	docker compose run --rm web python manage.py shell
+	docker compose run --rm django python manage.py shell
 
 test:
-	docker compose run --rm web pytest -q
+	docker compose run --rm django pytest -q
 
 test-integration:
-	docker compose run --rm web pytest tests/test_rabbitmq_integration.py -m integration -v --no-cov
+	docker compose run --rm django pytest tests/test_rabbitmq_integration.py -m integration -v --no-cov
+
+logs:
+	docker compose logs -f
+
+ps:
+	docker compose ps
