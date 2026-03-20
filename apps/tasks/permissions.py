@@ -1,6 +1,5 @@
 from typing import Any
 
-from django.db.models import Q
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from apps.users.models import User

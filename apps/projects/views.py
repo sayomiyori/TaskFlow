@@ -1,7 +1,5 @@
 from django.db.models import Count, Q
 from drf_spectacular.utils import OpenApiExample, extend_schema
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from apps.tasks.models import Task

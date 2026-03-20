@@ -3,7 +3,6 @@ from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework.viewsets import ModelViewSet
 
 from apps.comments.permissions import IsAdminOrProjectManagerOrProjectMember
-from apps.tasks.models import Task
 from apps.users.models import User
 
 from .models import Comment

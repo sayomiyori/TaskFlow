@@ -1,20 +1,15 @@
-from datetime import datetime
-
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiExample, extend_schema
-from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from apps.projects.models import Project
 from apps.users.models import User
 
 from .filters import TaskFilter
 from .models import Task
-from .permissions import IsAdmin, IsAdminOrProjectManagerOrProjectMember, IsProjectMember, IsProjectManager
+from .permissions import IsAdminOrProjectManagerOrProjectMember
 from .serializers import TaskCreateSerializer, TaskSerializer
 
 

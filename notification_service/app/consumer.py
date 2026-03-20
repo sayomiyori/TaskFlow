@@ -1,6 +1,5 @@
 import asyncio
 import json
-from collections.abc import Iterable
 
 import aio_pika
 import structlog
