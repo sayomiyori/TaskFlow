@@ -6,3 +6,7 @@ redis==5.2.1
 djangorestframework-simplejwt
 django-filter
 drf-spectacular
+pytest
+pytest-django
+factory_boy
+pytest-cov
