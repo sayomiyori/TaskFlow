@@ -1,12 +1,12 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-_UNSET = object()
-
 from apps.projects.models import Project
 from apps.users.models import User
 
 from .models import Task
+
+_UNSET = object()
 
 
 class UserAssigneeInfoSerializer(serializers.ModelSerializer):
