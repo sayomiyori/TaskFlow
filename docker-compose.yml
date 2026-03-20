@@ -1,0 +1,40 @@
+services:
+  web:
+    build: .
+    container_name: taskflow-web
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/app
+    ports:
+      - "${DJANGO_EXPOSE_PORT:-8001}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16
+    container_name: taskflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_EXPOSE_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: taskflow-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_EXPOSE_PORT:-6380}:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
