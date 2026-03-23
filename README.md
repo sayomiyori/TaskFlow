@@ -72,7 +72,7 @@ make migrate
 Open:
 - API docs: `http://localhost/api/docs/`
 - OpenAPI schema: `http://localhost/api/schema/`
-- RabbitMQ management: `http://localhost:15672/` (if exposed in your local override)
+- RabbitMQ management: `http://localhost:15672/`
 
 ## API Documentation
 
@@ -117,11 +117,14 @@ Coverage is generated in CI (`pytest --cov=apps --cov-report=xml`) and reported 
 
 ## Screenshots
 
-Add screenshots to `docs/images/` and update links if needed:
+### Swagger UI
 
-- Swagger UI  
-  ![Swagger UI](docs/images/swagger-ui.png)
-- RabbitMQ Management  
-  ![RabbitMQ Management](docs/images/rabbitmq-management.png)
-- WebSocket Demo  
-  ![WebSocket Demo](docs/images/websocket-demo.png)
+![Swagger UI 1](docs/images/swagger-ui-1.png)
+![Swagger UI 2](docs/images/swagger-ui-2.png)
+![Swagger UI 3](docs/images/swagger-ui-3.png)
+![Swagger UI 4](docs/images/swagger-ui-4.png)
+
+### RabbitMQ Management
+
+![RabbitMQ Exchanges](docs/images/rabbitmq-exchanges.png)
+![RabbitMQ Queues](docs/images/rabbitmq-queues.png)
